@@ -2,7 +2,7 @@ class IcmAutomation < Formula
   desc "ICM Automation tool for creating Gradle test projects"
   homepage "https://github.com/alirazabrame/icm-automation"
   url "https://github.com/alirazabrame/icm-automation/archive/v1.0.0.tar.gz"
-  sha256 "YOUR_ACTUAL_SHA256" # Generate this from your release
+  sha256 "851d49ca67f7ca1f6186a1b12fc956320ba83cdee078a3e57218eeaef58c99ae" # Generate this from your release
   license "MIT"
 
   depends_on "gradle" => :optional
@@ -38,7 +38,7 @@ class IcmAutomation < Formula
         - Java (recommended, for running tests)
 
       For more information, visit:
-        https://github.com/yourusername/icm-automation
+        https://github.com/alirazabrame/icm-automation
     EOS
   end
 end
