@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ALI Automation - Project Creator
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 show_help() {
     cat << EOF
