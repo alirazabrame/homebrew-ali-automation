@@ -332,21 +332,28 @@ EOS
     chmod +x gradlew
 
     # IntelliJ module config
-    cat <<EOF > "$ROOT_DIR/$PROJECT_NAME.iml"
+    IML_FILE="$ROOT_DIR/$PROJECT_NAME/$PROJECT_NAME.iml"
+
+if [ ! -f "$IML_FILE" ]; then
+    echo "🧩 Creating IntelliJ module file..."
+    cat > "$IML_FILE" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager">
+    <output url="file://\$MODULE_DIR\$/build/classes/java/main" />
+    <output-test url="file://\$MODULE_DIR\$/build/classes/java/test" />
     <content url="file://\$MODULE_DIR\$">
-      <sourceFolder url="file://\$MODULE_DIR\$/src/main/java" isTestSource="false"/>
-      <sourceFolder url="file://\$MODULE_DIR\$/src/test/java" isTestSource="true"/>
-      <excludeFolder url="file://\$MODULE_DIR\$/build"/>
-      <excludeFolder url="file://\$MODULE_DIR\$/out"/>
+      <sourceFolder url="file://\$MODULE_DIR\$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://\$MODULE_DIR\$/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://\$MODULE_DIR\$/build" />
+      <excludeFolder url="file://\$MODULE_DIR\$/.gradle" />
     </content>
-    <orderEntry type="inheritedJdk"/>
-    <orderEntry type="sourceFolder" forTests="false"/>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
 EOF
+fi
 
     echo "✅ Project '$PROJECT_NAME' created successfully!"
     echo "📁 Location: $(pwd)"
