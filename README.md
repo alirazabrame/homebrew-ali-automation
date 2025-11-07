@@ -7,6 +7,7 @@ Automation template for creating Gradle test projects with IntelliJ support and 
 ### Using Homebrew (macOS/Linux)
 
 1. **Tap this repository:**
+
    ```bash
    brew tap alirazabrame/ali-automation
    ```
@@ -23,16 +24,19 @@ Download the latest release from [GitHub Releases](https://github.com/alirazabra
 ## Usage
 
 Create a new Gradle test project:
+
 ```bash
 ali-automation create-project MyTestProject
 ```
 
 Show version:
+
 ```bash
 ali-automation version
 ```
 
 Show help:
+
 ```bash
 ali-automation help
 ```
