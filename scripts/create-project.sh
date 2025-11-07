@@ -49,19 +49,61 @@ create_gradle_project() {
     read -r -d '' BUILD_GRADLE_CONTENT <<'EOF'
 plugins {
     id 'java'
+    id 'maven'
+    id 'io.qameta.allure' version '2.8.1'
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation 'junit:junit:4.13.2'
-}
+group 'SampleProject.generated'
+version '1.0'
 
 test {
     useJUnitPlatform()
 }
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+jar {
+    // Include compiled test classes and their sources
+    from sourceSets.test.output+sourceSets.test.allSource
+
+    // Collect and zip all classes from both test and runtime configurations
+    from { configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+compileTestJava.options.compilerArgs.add '-parameters'
+
+def allureVersion = "2.13.6"
+def junit5Version = "5.6.2"
+allure {
+    autoconfigure = true
+    aspectjweaver = true
+    version = allureVersion
+
+    clean = true
+
+    useJUnit5 {
+        version = allureVersion
+    }
+}
+dependencies {
+    testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
+
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation group: 'com.ibm.informix', name: 'jdbc', version: '4.50.9'
+    implementation group: 'org.json', name: 'json', version: '20220924'
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.6.0'
+    implementation fileTree(dir: '/Users/araza08/Data/i2c_Repos/Automation-ICM/Automation Migration/Utilities-JAR')
+}
+
 EOF
     # ------------------ END CONFIG ------------------
 
