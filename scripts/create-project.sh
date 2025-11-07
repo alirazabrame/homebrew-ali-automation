@@ -41,6 +41,15 @@ get_package_path() {
 
 create_gradle_project() {
     GRADLE_VERSION="6.7"
+    WORK_DIR="$(pwd)"  # ✅ create projects in user's current directory
+
+    if [ -z "$1" ]; then
+        echo "❌ Usage: ali-automation create-project <ProjectName>"
+        exit 1
+    fi
+
+    PROJECT_NAME="$1"
+    ROOT_DIR="$WORK_DIR/$PROJECT_NAME"  # ✅ write to working dir, not brew dir
 
     read -r -d '' BUILD_GRADLE_CONTENT <<'EOF'
 plugins {
