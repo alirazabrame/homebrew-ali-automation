@@ -16,7 +16,7 @@ class AliAutomation < Formula
 
   test do
     # Test version command
-    assert_match "ICM Automation", shell_output("#{bin}/ali-automation version")
+    assert_match "Ali Automation", shell_output("#{bin}/ali-automation version")
     
     # Test help command
     assert_match "Usage:", shell_output("#{bin}/ali-automation help")
@@ -24,7 +24,7 @@ class AliAutomation < Formula
 
   def caveats
     <<~EOS
-      🚀 ICM Automation has been installed!
+      🚀 Ali Automation has been installed!
 
       Usage:
         ali-automation create-project <PROJECT_NAME>  - Create a new Gradle test project
