@@ -327,37 +327,42 @@ public class Navigation {
     echo "-- SQL cleanup script for $PROJECT_NAME" > "$ROOT_DIR/cleanup/${PROJECT_NAME}_CleanUp.sql"
     echo "DataSource file created at " > "$ROOT_DIR/datasource/${PROJECT_NAME}_DataSource.csv"
 
-    # ⚙️ Add Gradle wrapper
+        # ⚙️ Add Gradle wrapper
     cd "$ROOT_DIR"
-    
+
     # 🧩 Force Gradle 6.7 wrapper without relying on system Gradle
     echo "🛠  Setting up Gradle wrapper version $GRADLE_VERSION..."
-    
+
     # Create gradle/wrapper directory
     mkdir -p gradle/wrapper
-    
+
     # Write the gradle-wrapper.properties file manually
     cat <<EOF > gradle/wrapper/gradle-wrapper.properties
-    distributionBase=GRADLE_USER_HOME
-    distributionPath=wrapper/dists
-    zipStoreBase=GRADLE_USER_HOME
-    zipStorePath=wrapper/dists
-    distributionUrl=https\\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-    EOF
-    
-    # Download the wrapper JAR for Gradle 6.7
-    curl -sLo gradle/wrapper/gradle-wrapper.jar https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-    
-    # Generate the wrapper scripts manually (only if not already)
-    cat <<'EOS' > gradlew
-    #!/usr/bin/env sh
-    DIR="\$(cd "\$(dirname "\$0")" && pwd)"
-    exec "\$DIR/gradle/wrapper/gradle-wrapper.jar" "\$@"
-    EOS
-    chmod +x gradlew
-    
-    echo "✅ Gradle wrapper locked to version $GRADLE_VERSION."
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+EOF
 
+    # Download Gradle 6.7 binary zip (not jar)
+    echo "⬇️  Downloading Gradle ${GRADLE_VERSION}..."
+    curl -sLo gradle-${GRADLE_VERSION}-bin.zip https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+
+    # Extract wrapper jar from the zip
+    unzip -q gradle-${GRADLE_VERSION}-bin.zip "gradle-${GRADLE_VERSION}/lib/gradle-wrapper.jar" -d temp_gradle
+    mv temp_gradle/gradle-${GRADLE_VERSION}/lib/gradle-wrapper.jar gradle/wrapper/
+    rm -rf temp_gradle gradle-${GRADLE_VERSION}-bin.zip
+
+    # Create gradlew launcher script
+    cat <<'EOS' > gradlew
+#!/usr/bin/env sh
+DIR="$(cd "$(dirname "$0")" && pwd)"
+java -jar "$DIR/gradle/wrapper/gradle-wrapper.jar" "$@"
+EOS
+    chmod +x gradlew
+
+    echo "✅ Gradle wrapper locked to version $GRADLE_VERSION."
 
     echo "✅ Project '$PROJECT_NAME' created successfully!"
     echo "📁 Location: $(pwd)/$ROOT_DIR"
