@@ -4,7 +4,7 @@ class AliAutomation < Formula
   url "https://github.com/alirazabrame/homebrew-ali-automation/archive/v1.0.0.tar.gz"
   sha256 "cbe3b7dc412f60acec1d2538b354f32fc631899dc2360500a6dbbdec09d5d75c" # Generate this from your release
   license "MIT"
-  version "1.0.0"
+  version "1.0.1"
 
   depends_on "gradle" => :optional
   depends_on "openjdk" => :recommended
