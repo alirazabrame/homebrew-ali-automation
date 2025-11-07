@@ -327,7 +327,22 @@ public class Navigation {
     echo "-- SQL cleanup script for $PROJECT_NAME" > "$ROOT_DIR/cleanup/${PROJECT_NAME}_CleanUp.sql"
     echo "DataSource file created at " > "$ROOT_DIR/datasource/${PROJECT_NAME}_DataSource.csv"
 
-        # ⚙️ Add Gradle wrapper
+    # ☕️ Set up Java 11
+    echo "🧩 Setting up Java 11 environment..."
+
+    # Ensure Java 11 is installed via Homebrew if not present
+    if ! brew list openjdk@11 &>/dev/null; then
+        echo "📦 Installing Java 11 (openjdk@11)..."
+        brew install openjdk@11
+    fi
+
+    # Add Java 11 to PATH and JAVA_HOME for this session
+    export JAVA_HOME="$(/usr/libexec/java_home -v 11)"
+    export PATH="$JAVA_HOME/bin:$PATH"
+
+    echo "✅ Java 11 is active: $("$JAVA_HOME/bin/java" -version 2>&1 | head -n 1)"
+
+    # ⚙️ Add Gradle wrapper
     cd "$ROOT_DIR"
 
     # 🧩 Force Gradle 6.7 wrapper without relying on system Gradle
