@@ -2,7 +2,7 @@ class IcmAutomation < Formula
   desc "Automation template for creating Gradle test projects"
   homepage "https://github.com/alirazabrame/homebrew-ali-automation"
   url "https://github.com/alirazabrame/homebrew-ali-automation/archive/v1.0.0.tar.gz"
-  sha256 "851d49ca67f7ca1f6186a1b12fc956320ba83cdee078a3e57218eeaef58c99ae" # Generate this from your release
+  sha256 "d3d1557f2849267bba7b9712d0c0399d936c3390cb6146b0f25a4e4424987eae" # Generate this from your release
   license "MIT"
   version "1.0.0"
 
