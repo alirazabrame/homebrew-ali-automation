@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# ALI Automation - Project Creator
-VERSION="1.0.0"
+# ALI Automation - Project Creator (IntelliJ + Java 11)
+VERSION="1.1.0"
 
 show_help() {
     cat << EOF
@@ -10,9 +10,9 @@ ALI Automation v${VERSION}
 Usage: ali-automation create-project <PROJECT_NAME>
 
 Commands:
-    create-project <name>    Create a new Gradle project
-    version                 Show version information
-    help                    Show this help message
+    create-project <name>    Create a new IntelliJ-ready Gradle project
+    version                  Show version information
+    help                     Show this help message
 
 Examples:
     ali-automation create-project MyTestProject
@@ -23,29 +23,25 @@ EOF
 
 get_package_path() {
     local project_name="$1"
-    
-    echo "📦 Please enter the package name for your project (e.g., com.i2c.automation.icm):"
+
+    echo "📦 Enter the package name for your project (e.g., com.i2c.automation.icm):"
     read -r user_package
-    
-    # Validate package name
+
     if [[ -z "$user_package" ]]; then
         echo "⚠️  No package provided. Using default: com.i2c.automation.aliapp"
         user_package="com.i2c.automation.aliapp"
     fi
-    
-    # Convert package to path (replace dots with slashes)
+
     PACKAGE_PATH=$(echo "$user_package" | sed 's/\./\//g')
     PACKAGE_NAME="$user_package"
-    
+
     echo "✅ Package set to: $PACKAGE_NAME"
     echo "📁 Source path: src/test/java/$PACKAGE_PATH/$project_name"
 }
 
 create_gradle_project() {
-    # ------------------ CONFIG ------------------
     GRADLE_VERSION="6.7"
 
-    # 🧱 Your custom build.gradle content
     read -r -d '' BUILD_GRADLE_CONTENT <<'EOF'
 plugins {
     id 'java'
@@ -56,22 +52,20 @@ plugins {
 group 'SampleProject.generated'
 version '1.0'
 
+sourceCompatibility = 11
+targetCompatibility = 11
+
 test {
     useJUnitPlatform()
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 jar {
-    // Include compiled test classes and their sources
-    from sourceSets.test.output+sourceSets.test.allSource
-
-    // Collect and zip all classes from both test and runtime configurations
+    from sourceSets.test.output + sourceSets.test.allSource
     from { configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
@@ -83,70 +77,51 @@ allure {
     autoconfigure = true
     aspectjweaver = true
     version = allureVersion
-
     clean = true
-
-    useJUnit5 {
-        version = allureVersion
-    }
+    useJUnit5 { version = allureVersion }
 }
 dependencies {
     testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
-
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'com.ibm.informix', name: 'jdbc', version: '4.50.9'
     implementation group: 'org.json', name: 'json', version: '20220924'
     implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.6.0'
-    implementation fileTree(dir: '/Users/araza08/Data/i2c_Repos/Automation-ICM/Automation Migration/Utilities-JAR')
 }
-
 EOF
-    # ------------------ END CONFIG ------------------
 
-    # ✅ Get project name
     if [ -z "$1" ]; then
         echo "❌ Usage: ali-automation create-project <ProjectName>"
         exit 1
     fi
 
     PROJECT_NAME="$1"
-    
-    # 🎯 Get package path from user
     get_package_path "$PROJECT_NAME"
-    
-    ROOT_DIR="$PROJECT_NAME"
-    SRC_DIR="$ROOT_DIR/src/test/java/$PACKAGE_PATH/$PROJECT_NAME"
 
-    # 🧑‍💻 Detect system user info
+    ROOT_DIR="$PROJECT_NAME"
+    SRC_MAIN_DIR="$ROOT_DIR/src/main/java/$PACKAGE_PATH"
+    SRC_TEST_DIR="$ROOT_DIR/src/test/java/$PACKAGE_PATH/$PROJECT_NAME"
+
+    mkdir -p "$SRC_MAIN_DIR" "$SRC_TEST_DIR" "$ROOT_DIR/src/main/resources" "$ROOT_DIR/src/test/resources"
+
     SYSTEM_USER_NAME=$(git config user.name 2>/dev/null || echo "$USER")
     SYSTEM_USER_EMAIL=$(git config user.email 2>/dev/null || echo "eng.st14@i2cinc.com")
     GENERATED_DATE=$(date)
 
     echo "🚀 Creating Gradle project '$PROJECT_NAME'..."
-    mkdir -p "$SRC_DIR"
-
-    # 🧾 Write build.gradle
     echo "$BUILD_GRADLE_CONTENT" > "$ROOT_DIR/build.gradle"
-    echo "✅ build.gradle created."
+    echo "rootProject.name = '$PROJECT_NAME'" > "$ROOT_DIR/settings.gradle"
 
-    # ⚙️ settings.gradle
-    cat <<EOF > "$ROOT_DIR/settings.gradle"
-rootProject.name = '$PROJECT_NAME'
-EOF
-
-    # 🔖 Function to create Java files with header
     create_java_file() {
         local file_path="$1"
-        local class_name="$2"
-        local content="$3"
+        local content="$2"
 
         cat <<EOF > "$file_path"
 /**
- * This class was automatically generated by TestProject
+ * This class was automatically generated by ali-automation
  * Project: $PROJECT_NAME
  * Generated by: $SYSTEM_USER_NAME ($SYSTEM_USER_EMAIL)
  * Generated on $GENERATED_DATE.
@@ -157,9 +132,9 @@ $content
 EOF
     }
 
-    # 🧩 $PROJECT_NAME.java
-    create_java_file "$SRC_DIR/${PROJECT_NAME}.java" "$PROJECT_NAME" \
-"import static io.qameta.allure.Allure.step;
+    # --- Main Test Class ---
+    create_java_file "$SRC_TEST_DIR/${PROJECT_NAME}.java" "$(cat <<'EOF'
+import static io.qameta.allure.Allure.step;
 
 import com.i2c.utils.LoginBean;
 import org.testng.Assert;
@@ -244,11 +219,12 @@ public class $PROJECT_NAME {
         }
     }
 }
-"
+EOF
+)"
 
-    # 🧩 ${PROJECT_NAME}DataSource.java
-    create_java_file "$SRC_DIR/${PROJECT_NAME}DataSource.java" "${PROJECT_NAME}DataSource" \
-"public class ${PROJECT_NAME}DataSource {
+    # --- DataSource Class ---
+    create_java_file "$SRC_TEST_DIR/${PROJECT_NAME}DataSource.java" "$(cat <<'EOF'
+public class ${PROJECT_NAME}DataSource {
 
     String TID;
     String Scenario_Description;
@@ -269,11 +245,12 @@ public class $PROJECT_NAME {
         return \"[\" + TID + ',' + Module_Name + ',' + Scenario_Description + ']';
     }
 }
-"
+EOF
+)"
 
-    # 🧩 ${PROJECT_NAME}Screen.java
-    create_java_file "$SRC_DIR/${PROJECT_NAME}Screen.java" "${PROJECT_NAME}Screen" \
-"import com.i2c.addons.Informix.SendQuery;
+    # --- Screen Class ---
+    create_java_file "$SRC_TEST_DIR/${PROJECT_NAME}Screen.java" "$(cat <<'EOF'
+import com.i2c.addons.Informix.SendQuery;
 import com.i2c.elements.ElementsUtility;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -302,11 +279,12 @@ public class ${PROJECT_NAME}Screen {
        driver.findElement(By.id(submitButtonId)).click();
     }
 }
-"
+EOF
+)"
 
-    # 🧩 Navigation.java
-    create_java_file "$SRC_DIR/Navigation.java" "Navigation" \
-"import org.openqa.selenium.By;
+    # --- Navigation Class ---
+    create_java_file "$SRC_TEST_DIR/Navigation.java" "$(cat <<'EOF'
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class Navigation {
@@ -317,59 +295,33 @@ public class Navigation {
         Thread.sleep(2000);
     }
 }
-"
+EOF
+)"
 
-    # 📂 Add cleanup + datasource folders
-    mkdir -p "$ROOT_DIR/cleanup"
-    mkdir -p "$ROOT_DIR/datasource"
-
-    # 🗂️ Create files inside them
+    # Create supporting folders
+    mkdir -p "$ROOT_DIR/cleanup" "$ROOT_DIR/datasource"
     echo "-- SQL cleanup script for $PROJECT_NAME" > "$ROOT_DIR/cleanup/${PROJECT_NAME}_CleanUp.sql"
-    echo "DataSource file created at " > "$ROOT_DIR/datasource/${PROJECT_NAME}_DataSource.csv"
+    echo "TC_ID,Scenario_Description,Application_URL" > "$ROOT_DIR/datasource/${PROJECT_NAME}_DataSource.csv"
 
-    # ☕️ Set up Java 11
     echo "🧩 Setting up Java 11 environment..."
-
-    # Ensure Java 11 is installed via Homebrew if not present
     if ! brew list openjdk@11 &>/dev/null; then
-        echo "📦 Installing Java 11 (openjdk@11)..."
+        echo "📦 Installing Java 11..."
         brew install openjdk@11
     fi
-
-    # Add Java 11 to PATH and JAVA_HOME for this session
     export JAVA_HOME="$(/usr/libexec/java_home -v 11)"
     export PATH="$JAVA_HOME/bin:$PATH"
+    echo "✅ Java 11 active: $("$JAVA_HOME/bin/java" -version 2>&1 | head -n 1)"
 
-    echo "✅ Java 11 is active: $("$JAVA_HOME/bin/java" -version 2>&1 | head -n 1)"
-
-    # ⚙️ Add Gradle wrapper
-    cd "$ROOT_DIR"
-
-    # 🧩 Force Gradle 6.7 wrapper without relying on system Gradle
+    cd "$ROOT_DIR" || exit
     echo "🛠  Setting up Gradle wrapper version $GRADLE_VERSION..."
-
-    # Create gradle/wrapper directory
     mkdir -p gradle/wrapper
-
-    # Write the gradle-wrapper.properties file manually
     cat <<EOF > gradle/wrapper/gradle-wrapper.properties
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
 distributionUrl=https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
 EOF
-
-    # Download Gradle 6.7 binary zip (not jar)
-    echo "⬇️  Downloading Gradle ${GRADLE_VERSION}..."
     curl -sLo gradle-${GRADLE_VERSION}-bin.zip https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-
-    # Extract wrapper jar from the zip
     unzip -q gradle-${GRADLE_VERSION}-bin.zip "gradle-${GRADLE_VERSION}/lib/gradle-wrapper.jar" -d temp_gradle
     mv temp_gradle/gradle-${GRADLE_VERSION}/lib/gradle-wrapper.jar gradle/wrapper/
     rm -rf temp_gradle gradle-${GRADLE_VERSION}-bin.zip
-
-    # Create gradlew launcher script
     cat <<'EOS' > gradlew
 #!/usr/bin/env sh
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -377,19 +329,32 @@ java -jar "$DIR/gradle/wrapper/gradle-wrapper.jar" "$@"
 EOS
     chmod +x gradlew
 
-    echo "✅ Gradle wrapper locked to version $GRADLE_VERSION."
+    # IntelliJ module config
+    cat <<EOF > "$ROOT_DIR/$PROJECT_NAME.iml"
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <content url="file://\$MODULE_DIR\$">
+      <sourceFolder url="file://\$MODULE_DIR\$/src/main/java" isTestSource="false"/>
+      <sourceFolder url="file://\$MODULE_DIR\$/src/test/java" isTestSource="true"/>
+      <excludeFolder url="file://\$MODULE_DIR\$/build"/>
+      <excludeFolder url="file://\$MODULE_DIR\$/out"/>
+    </content>
+    <orderEntry type="inheritedJdk"/>
+    <orderEntry type="sourceFolder" forTests="false"/>
+  </component>
+</module>
+EOF
 
     echo "✅ Project '$PROJECT_NAME' created successfully!"
-    echo "📁 Location: $(pwd)/$ROOT_DIR"
+    echo "📁 Location: $(pwd)"
     echo "📦 Package: $PACKAGE_NAME.$PROJECT_NAME"
 }
 
-# Main command handler
 case "${1}" in
     create-project)
         if [ -z "$2" ]; then
             echo "❌ Project name is required"
-            echo "Usage: ali-automation create-project <PROJECT_NAME>"
             exit 1
         fi
         create_gradle_project "$2"
@@ -401,12 +366,6 @@ case "${1}" in
         show_help
         ;;
     *)
-        if [ -z "$1" ]; then
-            show_help
-        else
-            echo "❌ Unknown command: $1"
-            show_help
-            exit 1
-        fi
+        show_help
         ;;
 esac
