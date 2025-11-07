@@ -1,15 +1,6 @@
-# icm-automation
-create icm application basic project template
+# ali-automation
+Automation gradle project template
 
-## Project Structures
-
-icm-automation/
-├── Formula/
-│   └── icm-automation.rb
-├── scripts/
-│   └── create-project.sh
-└── templates/
-    └── build.gradle.template
 
 
 ## Download
@@ -17,7 +8,7 @@ icm-automation/
 * Using Homebrew:
 
     ```bash
-    $ brew install allure
+    $ brew install ali-automation
     ```
 ## License
 
