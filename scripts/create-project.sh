@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ALI Automation - Project Creator (IntelliJ + Java 11)
-VERSION="1.0.2"
+VERSION="1.0.0"
 
 show_help() {
     cat << EOF
@@ -332,29 +332,74 @@ EOS
     chmod +x gradlew
     cd "$WORK_DIR"
 
-    # IntelliJ module config
-    IML_FILE="$ROOT_DIR/$PROJECT_NAME/$PROJECT_NAME.iml"
+    # IntelliJ configuration
+    echo "🧩 Creating IntelliJ IDEA configuration..."
+    
+    # Create .idea directory structure
+    mkdir -p "$ROOT_DIR/.idea"
+    
+    # Create modules.xml to register the project module
+    cat > "$ROOT_DIR/.idea/modules.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://\$PROJECT_DIR\$/$PROJECT_NAME.iml" filepath="\$PROJECT_DIR\$/$PROJECT_NAME.iml" />
+    </modules>
+  </component>
+</project>
+EOF
 
-if [ ! -f "$IML_FILE" ]; then
-    echo "🧩 Creating IntelliJ module file..."
+    # Create misc.xml for project settings
+    cat > "$ROOT_DIR/.idea/misc.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://\$PROJECT_DIR\$/out" />
+  </component>
+</project>
+EOF
+
+    # Create vcs.xml for version control
+    cat > "$ROOT_DIR/.idea/vcs.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+  </component>
+</project>
+EOF
+
+    # Create compiler.xml
+    cat > "$ROOT_DIR/.idea/compiler.xml" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11" />
+  </component>
+</project>
+EOF
+
+    # Create .iml file at the root level (not in subdirectory)
+    IML_FILE="$PROJECT_NAME/$PROJECT_NAME.iml"
     cat > "$IML_FILE" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager">
-    <output url="file://\$MODULE_DIR\$/build/classes/java/main" />
-    <output-test url="file://\$MODULE_DIR\$/build/classes/java/test" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
     <content url="file://\$MODULE_DIR\$">
       <sourceFolder url="file://\$MODULE_DIR\$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://\$MODULE_DIR\$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://\$MODULE_DIR\$/src/test/java" isTestSource="true" />
-      <excludeFolder url="file://\$MODULE_DIR\$/build" />
+      <sourceFolder url="file://\$MODULE_DIR\$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://\$MODULE_DIR\$/.gradle" />
+      <excludeFolder url="file://\$MODULE_DIR\$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
 EOF
-fi
 
     echo "✅ Project '$PROJECT_NAME' created successfully!"
     echo "📁 Location: $(pwd)"

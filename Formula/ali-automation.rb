@@ -1,10 +1,10 @@
 class AliAutomation < Formula
   desc "Automation template for creating Gradle test projects"
   homepage "https://github.com/alirazabrame/homebrew-ali-automation"
-  url "https://github.com/alirazabrame/homebrew-ali-automation/archive/v1.0.3.tar.gz"
-  sha256 "1f04797639d03d66a254b5f04060233906067021a71f4e117e1a11d22259977a" # Will be updated after release
+  url "https://github.com/alirazabrame/homebrew-ali-automation/archive/v1.0.0.tar.gz"
+  sha256 "" # Will be updated after release
   license "MIT"
-  version "1.0.3"
+  version "1.0.0"
 
   depends_on "gradle" => :optional
   depends_on "openjdk" => :recommended
