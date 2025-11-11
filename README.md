@@ -181,7 +181,7 @@ Edit `build.gradle` to add or update dependencies:
 
 ```gradle
 dependencies {
-    testImplementation 'your:dependency:version'
+    implementation fileTree(dir: '/Users/araza08/Data/i2c_Repos/Automation-ICM/Automation Migration/Utilities-JAR')
 }
 ```
 
