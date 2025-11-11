@@ -99,6 +99,7 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20220924'
     implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.6.0'
+    implementation fileTree(dir: '/Users/araza08/Data/i2c_Repos/Automation-ICM/Automation Migration/Utilities-JAR')
 }
 EOF
 
