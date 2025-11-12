@@ -149,6 +149,7 @@ EOF
     create_java_file "$SRC_TEST_DIR/${PROJECT_NAME}.java" "$PROJECT_NAME" "$(cat <<EOF
 import org.testng.Assert;
 import io.qameta.allure.Allure;
+import com.i2c.addons.Informix.SendQuery;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -224,6 +225,12 @@ public class $PROJECT_NAME {
     static void tearDown() {
         if (driver != null) {
             driver.quit();
+        }
+    }
+
+    static void executeCleanUp() throws Exception {
+        try (BufferedReader br = new BufferedReader(new FileReader("cleanup/${PROJECT_NAME}_CleanUp.sql"));) {
+            SendQuery.executeICMCleanUp(br);
         }
     }
 }
