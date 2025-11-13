@@ -113,7 +113,7 @@ EOF
 
     ROOT_DIR="$PROJECT_NAME"
     # Convert to camelCase: remove whitespace, lowercase first letter, keep rest as-is
-    PROJECT_NAME_LOWER=$(echo "$PROJECT_NAME" | sed 's/ //g' | sed 's/^\(.\)/\L\1/')
+    PROJECT_NAME_LOWER=$(echo "$PROJECT_NAME" | sed 's/ //g' | awk '{print tolower(substr($0,1,1)) substr($0,2)}')
     SRC_MAIN_DIR="$ROOT_DIR/src/main/java/$PACKAGE_PATH"
     SRC_TEST_DIR="$ROOT_DIR/src/test/java/$PACKAGE_PATH/$PROJECT_NAME_LOWER"
 
