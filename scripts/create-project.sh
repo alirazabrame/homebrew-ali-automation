@@ -112,7 +112,8 @@ EOF
     get_package_path "$PROJECT_NAME"
 
     ROOT_DIR="$PROJECT_NAME"
-    PROJECT_NAME_LOWER=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+    # Convert to camelCase: remove whitespace, lowercase first letter, keep rest as-is
+    PROJECT_NAME_LOWER=$(echo "$PROJECT_NAME" | sed 's/ //g' | sed 's/^\(.\)/\L\1/')
     SRC_MAIN_DIR="$ROOT_DIR/src/main/java/$PACKAGE_PATH"
     SRC_TEST_DIR="$ROOT_DIR/src/test/java/$PACKAGE_PATH/$PROJECT_NAME_LOWER"
 
