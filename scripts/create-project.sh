@@ -227,12 +227,11 @@ public class $PROJECT_NAME {
         if (driver != null) {
             driver.quit();
         }
-    }
 
-    static void executeCleanUp() throws Exception {
-        try (BufferedReader br = new BufferedReader(new FileReader("cleanup/${PROJECT_NAME}_CleanUp.sql"));) {
-            SendQuery.executeICMCleanUp(br);
-        }
+        // executeCleanUp();
+    }
+    static void executeCleanUp() {
+        SendQuery.executeICMCleanUpFile("cleanup/${PROJECT_NAME}_CleanUp.sql");
     }
 }
 EOF
