@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ALI Automation - Project Creator (IntelliJ + Java 11)
-VERSION="1.0.2"
+VERSION="1.0.3"
 
 show_help() {
     cat << EOF
