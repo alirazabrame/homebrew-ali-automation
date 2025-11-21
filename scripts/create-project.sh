@@ -179,6 +179,9 @@ import java.util.List;
 public class $PROJECT_NAME {
     public static WebDriver driver;
 
+    public $PROJECT_NAME() {
+    }
+
     @BeforeAll
     static void setup() throws Exception {
         System.setProperty("webdriver.chrome.driver", "/Users/araza08/Data/Libraries/chromedriver-mac-x64/chromedriver");
@@ -216,7 +219,6 @@ public class $PROJECT_NAME {
         try {
             // main logic
         } catch (Exception e) {
-            data.Actual_Result = "Fail";
             Assert.fail("Fail: " + e.getMessage(), e);
         }
     }
@@ -247,21 +249,14 @@ public class ${PROJECT_NAME}DataSource {
 
     String TID;
     String Scenario_Description;
-    String Module_Name;
     String Application_URL;
-    String Verify_Login;
-    String LoggedIn_UserID;
-    String LoggedIn_UserPassword;
     String OLD_Password;
     String New_Password;
     String Confirm_NewPassword;
-    String Expected_Result;
-    String Actual_Result;
-    String Test_Result;
 
     @Override
     public String toString() {
-        return "[" + TID + ',' + Module_Name + ',' + Scenario_Description + ']';
+        return "[" + TID + ',' + Scenario_Description + ']';
     }
 }
 EOF
@@ -272,24 +267,17 @@ EOF
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class ${PROJECT_NAME}Screen {
-    String oldPasswordFieldId = "old-password";
-    String newPasswordFieldId = "new-password";
-    String confirmNewPasswordFieldId = "confirm-password";
-    String submitButtonId = "continueButton";
+public final class ${PROJECT_NAME}Screen {
+    final static String oldPasswordFieldId = "old-password";
+    final static String newPasswordFieldId = "new-password";
+    final static String confirmNewPasswordFieldId = "confirm-password";
+    final static String submitButtonId = "continueButton";
 
-    private ${PROJECT_NAME}Screen() {}
-
-    private static ${PROJECT_NAME}Screen instance = null;
-
-    public static ${PROJECT_NAME}Screen getInstance() {
-        if (instance == null) {
-            instance = new ${PROJECT_NAME}Screen();
-        }
-        return instance;
+    private ${PROJECT_NAME}Screen() {
+        throw new UnsupportedOperationException("Static class");
     }
 
-    public void execute(WebDriver driver, ${PROJECT_NAME}DataSource data) {
+    public static void execute(WebDriver driver, ${PROJECT_NAME}DataSource data) {
        driver.findElement(By.id(oldPasswordFieldId)).sendKeys(data.OLD_Password);
        driver.findElement(By.id(newPasswordFieldId)).sendKeys(data.New_Password);
        driver.findElement(By.id(confirmNewPasswordFieldId)).sendKeys(data.Confirm_NewPassword);
@@ -303,13 +291,16 @@ EOF
     create_java_file "$SRC_TEST_DIR/Navigation.java" "Navigation" "$(cat <<EOF
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import com.i2c.elements.ElementsUtility;
 
-public class Navigation {
-    private static String User_Info_Button_Id = "user-info-drop";
+public final class Navigation {
+    private final static String User_Info_Button_Id = "user-info-drop";
+
+    private Navigation() {
+        throw new UnsupportedOperationException("Static class");
+    }
     public static void selectUserInfoButton(WebDriver driver) throws Exception {
-        By by = By.id(User_Info_Button_Id);
-        driver.findElement(by).click();
-        Thread.sleep(2000);
+        ElementsUtility.clickElement(driver, By.id(User_Info_Button_Id));
     }
 }
 EOF
