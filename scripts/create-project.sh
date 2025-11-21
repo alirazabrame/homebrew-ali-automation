@@ -74,6 +74,7 @@ repositories {
 }
 
 jar {
+    zip64 true
     from sourceSets.test.output + sourceSets.test.allSource
     from { configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
@@ -166,9 +167,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,8 +191,9 @@ public class $PROJECT_NAME {
 
     private static Object[][] provideParameters() throws Exception {
         List<${PROJECT_NAME}DataSource> csvList = new ArrayList<>();
+        Path csvPath = Paths.get("datasource/${PROJECT_NAME}_DataSource.csv");
         try (
-            BufferedReader br = new BufferedReader(new FileReader("datasource/${PROJECT_NAME}_DataSource.csv"));
+            BufferedReader br = Files.newBufferedReader(csvPath, StandardCharsets.UTF_8);
             CSVParser parser = CSVFormat.DEFAULT.withDelimiter(',').withHeader().parse(br);
         ) {
             for (CSVRecord record : parser) {
