@@ -295,6 +295,8 @@ EOF
     create_java_file "$SRC_TEST_DIR/Navigation.java" "Navigation" "$(cat <<EOF
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import com.i2c.elements.exceptions.ElementNotEnableException;
+import com.i2c.elements.exceptions.ElementNotVisibleException;
 import com.i2c.elements.ElementsUtility;
 
 public final class Navigation {
