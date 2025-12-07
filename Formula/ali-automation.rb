@@ -2,7 +2,7 @@ class AliAutomation < Formula
   desc "Automation template for creating Gradle test projects"
   homepage "https://github.com/alirazabrame/homebrew-ali-automation"
   url "https://github.com/alirazabrame/homebrew-ali-automation/archive/v1.0.4.tar.gz"
-  sha256 "164cd58df415a4bcf46584d029cb880abf4bd6286dbdabe3342cb98291d70637"
+  sha256 "f0a59c6792ac127d431ae0004f5b8684e158c89dc50da443be5375768f50324f"
   license "MIT"
   version "1.0.4"
 
