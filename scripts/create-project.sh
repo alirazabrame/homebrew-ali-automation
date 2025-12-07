@@ -268,6 +268,9 @@ EOF
     create_java_file "$SRC_TEST_DIR/${PROJECT_NAME}Screen.java" "${PROJECT_NAME}Screen" "$(cat <<EOF
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import com.i2c.elements.exceptions.ElementNotEnableException;
+import com.i2c.elements.exceptions.ElementNotVisibleException;
+import com.i2c.elements.ElementsUtility;
 
 public class ${PROJECT_NAME}Screen {
     String oldPasswordFieldId = "old-password";
@@ -281,11 +284,12 @@ public class ${PROJECT_NAME}Screen {
         this.driver = driver;
     }
 
-    public void execute(${PROJECT_NAME}DataSource data) {
-       driver.findElement(By.id(oldPasswordFieldId)).sendKeys(data.OLD_Password);
-       driver.findElement(By.id(newPasswordFieldId)).sendKeys(data.New_Password);
-       driver.findElement(By.id(confirmNewPasswordFieldId)).sendKeys(data.Confirm_NewPassword);
-       driver.findElement(By.id(submitButtonId)).click();
+    public void execute(${PROJECT_NAME}DataSource data) throws ElementNotEnableException, ElementNotVisibleException {
+        ElementsUtility.fillInputFieldAndTraverse(driver, By.id(oldPasswordFieldId), data.OLD_Password));
+        ElementsUtility.fillInputFieldAndTraverse(driver, By.id(newPasswordFieldId), data.New_Password));
+        ElementsUtility.fillInputFieldAndTraverse(driver, By.id(confirmNewPasswordFieldId), data.Confirm_NewPassword));
+       
+        ElementsUtility.clickElement(driver, By.id(submitButtonId));
     }
 }
 EOF
