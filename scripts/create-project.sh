@@ -303,7 +303,7 @@ public final class Navigation {
     private Navigation() {
         throw new UnsupportedOperationException("Static class");
     }
-    public static void selectUserInfoButton(WebDriver driver) throws Exception {
+    public static void selectUserInfoButton(WebDriver driver) throws ElementNotEnableException, ElementNotVisibleException {
         ElementsUtility.clickElement(driver, By.id(User_Info_Button_Id));
     }
 }
